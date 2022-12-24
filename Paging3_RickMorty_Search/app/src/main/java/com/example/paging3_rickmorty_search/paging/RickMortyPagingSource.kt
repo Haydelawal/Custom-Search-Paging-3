@@ -13,21 +13,22 @@ class RickMortyPagingSource
 ) : PagingSource<Int, Result>() {
 
     override fun getRefreshKey(state: PagingState<Int, Result>): Int? {
-        return null
+        return state.anchorPosition
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Result> {
 
         return try {
 
-            val position =
-                if (params.key == null) {
-                    1
-                } else {
-                    params.key
-                }
+//            val position =
+//                if (params.key == null) {
+//                    1
+//                } else {
+//                    params.key
+//                }
 
-            val currentPage = params.key ?: 1
+//            val currentPage = params.key ?: 1
+
             val response = api.getSpecificCharacters(nameQuery)
             val data = response.body()?.results ?: emptyList()
             val responseData = mutableListOf<Result>()
@@ -35,10 +36,9 @@ class RickMortyPagingSource
 
             LoadResult.Page(
                 data = responseData,
-                prevKey = if (position == 1) null else position!! - 1,
-                nextKey = currentPage.plus(1)
+                prevKey = null,
+                nextKey = null
             )
-
 
         } catch (e: Exception) {
             LoadResult.Error(e)
